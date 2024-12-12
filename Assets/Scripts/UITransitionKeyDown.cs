@@ -19,23 +19,27 @@ namespace UnityFigmaBridge.Runtime.UI
 
         private GameObject _currentScreen;
         private bool _isTransitioning = false;
+        private bool _isButtonPressed = false;
 
         private void Start()
         {
             _transitionDelayScript = GetComponent<UITransitionDelay>();
+            _currentScreen = m_TargetScreenPrefab;
         }
         private void TransitionToScene()
         {
-            if (_isTransitioning) return;
+            if (_isTransitioning || _isButtonPressed) return;
 
             _isTransitioning = true;
+            _isButtonPressed = true;
 
             var prototypeFlowController = GetComponentInParent<Canvas>().rootCanvas?.GetComponent<PrototypeFlowController>();
             if (prototypeFlowController != null)
             {
                 if (_currentScreen != null)
                 {
-                    Destroy(_currentScreen);
+                    m_TargetScreenPrefab.SetActive(false);
+                    _currentScreen.SetActive(false);
                 }
                 _currentScreen = Instantiate(m_TargetScreenPrefab, prototypeFlowController.transform);
 
@@ -49,8 +53,16 @@ namespace UnityFigmaBridge.Runtime.UI
                     rectTransform.anchorMax = new Vector2(1f, 1f);
                     rectTransform.sizeDelta = Vector2.zero;
                 }
+                _currentScreen.SetActive(true);
             }
 
+            StartCoroutine(ResetFlags());
+        }
+
+        private IEnumerator ResetFlags()
+        {
+            yield return new WaitForSeconds(0.5f);
+            _isButtonPressed = false;
             _isTransitioning = false;
         }
 

@@ -13,9 +13,8 @@ namespace UnityFigmaBridge.Runtime.UI
             set => m_TargetScreenPrefab = value;
         }
 
-        private bool _keyDown = false;
         private bool _isTransitioning = false;
-
+        private bool _isButtonPressed = false;
 
         [SerializeField] private GameObject m_TargetScreenPrefab;
         [SerializeField] private float delay;
@@ -24,22 +23,30 @@ namespace UnityFigmaBridge.Runtime.UI
 
         protected void Start()
         {
-            _keyDown = false;
+            _currentScreen = m_TargetScreenPrefab;
+            _isButtonPressed = false;
             StartCoroutine(WaitThenTransition());
         }
 
         private void TransitionToScene()
         {
-            if (!_keyDown && m_TargetScreenPrefab != null)
+            if (_isTransitioning || _isButtonPressed) return;
+
+            _isTransitioning = true;
+            _isButtonPressed = true;
+
+            if (m_TargetScreenPrefab != null)
             {
                 var prototypeFlowController =GetComponentInParent<Canvas>().rootCanvas?.GetComponent<PrototypeFlowController>();
                 if (prototypeFlowController != null)
                 {
                     if (_currentScreen != null)
                     {
-                        Destroy(_currentScreen);
+                        m_TargetScreenPrefab.SetActive(false);
+                        _currentScreen.SetActive(false);
                     }
                     _currentScreen = Instantiate(m_TargetScreenPrefab, prototypeFlowController.transform);
+                    _currentScreen.SetActive(true);
 
                     RectTransform rectTransform = _currentScreen.GetComponent<RectTransform>();
 
@@ -53,7 +60,13 @@ namespace UnityFigmaBridge.Runtime.UI
                     }
                 }
             }
-
+            StartCoroutine(ResetFlags());
+        }
+        private IEnumerator ResetFlags()
+        {
+            yield return new WaitForSeconds(0.5f);
+            _isButtonPressed = false;
+            _isTransitioning = false;
         }
 
         IEnumerator WaitThenTransition()
@@ -68,7 +81,7 @@ namespace UnityFigmaBridge.Runtime.UI
 
         public void KeyPressed()
         {
-            _keyDown = true;
+            _isButtonPressed = true;
         }
 
 
