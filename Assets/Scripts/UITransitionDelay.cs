@@ -13,7 +13,7 @@ namespace UnityFigmaBridge.Runtime.UI
             set => m_TargetScreenPrefab = value;
         }
 
-        private bool _keyDown = false;z
+        private bool _keyDown = false;
         private bool _isTransitioning = false;
 
 
@@ -60,10 +60,10 @@ namespace UnityFigmaBridge.Runtime.UI
         {
             if (_isTransitioning) yield break;
 
-            -_isTransitioning = true;
+            _isTransitioning = true;
             yield return new WaitForSeconds(delay);
             TransitionToScene();
-            -_isTransitioning = false;
+            _isTransitioning = false;
         }
 
         public void KeyPressed()
