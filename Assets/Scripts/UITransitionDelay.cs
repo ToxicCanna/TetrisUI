@@ -6,19 +6,18 @@ namespace UnityFigmaBridge.Runtime.UI
 {
     public class UITransitionDelay : MonoBehaviour
     {
-        /// <summary>
-        /// The screen prefab to transition to
-        /// </summary>
+        // The screen prefab to transition to
         public GameObject TargetScreenPrefab
         {
             get => m_TargetScreenPrefab;
             set => m_TargetScreenPrefab = value;
         }
 
-        private bool _keyDown = false;
+        private bool _keyDown = false;z
+        private bool _isTransitioning = false;
+
 
         [SerializeField] private GameObject m_TargetScreenPrefab;
-
         [SerializeField] private float delay;
 
         private GameObject _currentScreen;
@@ -59,8 +58,12 @@ namespace UnityFigmaBridge.Runtime.UI
 
         IEnumerator WaitThenTransition()
         {
+            if (_isTransitioning) yield break;
+
+            -_isTransitioning = true;
             yield return new WaitForSeconds(delay);
             TransitionToScene();
+            -_isTransitioning = false;
         }
 
         public void KeyPressed()

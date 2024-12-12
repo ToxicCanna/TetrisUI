@@ -6,9 +6,7 @@ namespace UnityFigmaBridge.Runtime.UI
 {
     public class UITransitionKeydown : MonoBehaviour
     {
-        /// <summary>
-        /// The screen prefab to transition to
-        /// </summary>
+        // The screen prefab to transition to
         public GameObject TargetScreenPrefab
         {
             get => m_TargetScreenPrefab;
@@ -20,6 +18,7 @@ namespace UnityFigmaBridge.Runtime.UI
         [SerializeField] private string InputType;
 
         private GameObject _currentScreen;
+        private bool _isTransitioning = false;
 
         private void Start()
         {
@@ -27,6 +26,10 @@ namespace UnityFigmaBridge.Runtime.UI
         }
         private void TransitionToScene()
         {
+            if (_isTransitioning) return;
+
+            _isTransitioning = true;
+
             var prototypeFlowController = GetComponentInParent<Canvas>().rootCanvas?.GetComponent<PrototypeFlowController>();
             if (prototypeFlowController != null)
             {
@@ -47,6 +50,8 @@ namespace UnityFigmaBridge.Runtime.UI
                     rectTransform.sizeDelta = Vector2.zero;
                 }
             }
+
+            _isTransitioning = false;
         }
 
         private void Update()
